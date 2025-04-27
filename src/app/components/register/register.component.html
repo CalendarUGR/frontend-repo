@@ -1,0 +1,68 @@
+<div class="flex justify-center items-center min-h-screen bg-white">
+  <div class="w-full max-w-md p-8 rounded-lg shadow-md bg-white">
+    <div class="flex flex-col items-center mb-6">
+      <img src="assets/logo.png" alt="TempusUGR Logo" class="w-20 h-auto mb-2">
+      <h1 class="text-2xl font-bold text-primary m-0">TempusUGR</h1>
+    </div>
+
+    <h2 class="text-xl text-primary text-center mb-6">Registro</h2>
+
+    <form (ngSubmit)="register()">
+      <div class="form-group">
+        <label for="name" class="form-label">Nickname</label>
+        <input
+          type="text"
+          id="nickname"
+          name="nickname"
+          [(ngModel)]="registerData.nickname"
+          required
+          placeholder="Nickname"
+          class="form-input">
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="form-label">Correo Electrónico</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          [(ngModel)]="registerData.email"
+          required
+          placeholder="ejemplo@ugr.es"
+          class="form-input">
+      </div>
+
+      <div class="form-group relative">
+        <label for="password" class="form-label">Contraseña</label>
+        <input [type]="showPassword1 ? 'text' : 'password'" id="password1" name="password"
+          [(ngModel)]="registerData.password" required placeholder="Contraseña" class="form-input pr-10">
+        <button type="button" (click)="togglePassword1Visibility()"
+          class="absolute inset-y-0 right-0 flex items-center px-3 m-4 text-gray-500 hover:text-gray-700">
+          <span *ngIf="showPassword1">👁️</span> <!-- Ícono para mostrar -->
+          <span *ngIf="!showPassword1">🙈</span> <!-- Ícono para ocultar -->
+        </button>
+      </div>
+
+      <div class="form-group relative">
+        <label for="password" class="form-label">Confirma contraseña</label>
+        <input [type]="showPassword2 ? 'text' : 'password'" id="password2" name="password"
+          [(ngModel)]="confirmPassword" required placeholder="Contraseña" class="form-input pr-10">
+        <button type="button" (click)="togglePassword2Visibility()"
+          class="absolute inset-y-0 right-0 flex items-center px-3 m-4 text-gray-500 hover:text-gray-700">
+          <span *ngIf="showPassword2">👁️</span> <!-- Ícono para mostrar -->
+          <span *ngIf="!showPassword2">🙈</span> <!-- Ícono para ocultar -->
+        </button>
+      </div>
+
+      <div class="text-primary text-sm mt-2" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn-primary">Registrarse</button>
+    </form>
+
+    <div class="text-center mt-6 text-gray-600">
+      ¿Ya tienes cuenta? <a routerLink="/login" class="text-primary font-medium hover:underline">Iniciar Sesión</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+:root {
+  --primary-color: rgb(184, 45, 42);
+  --white: #ffffff;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 1rem;
+}
+
+.btn-primary:hover {
+  background-color: rgba(184, 45, 42, 0.9);
+}
