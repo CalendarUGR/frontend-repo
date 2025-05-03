@@ -32,6 +32,12 @@ export class LoginComponent {
     if (state?.showActivationModal) {
       this.showModal = true;
     }
+
+    // If access token is present, redirect to dashboard
+    const accessToken = localStorage.getItem("access_token");
+    if (accessToken) {
+      this.router.navigate(["/dashboard"]);
+    }
   }
 
   closeModal() {

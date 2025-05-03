@@ -23,7 +23,7 @@ export class AuthService {
         this.isAuthenticated = true
         localStorage.setItem(this.accessTokenKey, response.access_token)
         localStorage.setItem(this.refreshTokenKey, response.refresh_token)
-        console.log(response)
+        //console.log(response)
       }),
     );
   }
@@ -32,7 +32,7 @@ export class AuthService {
 
     return this.apiService.post<User>("user/register", registerData).pipe(
       tap((response) => {
-        console.log("Registro exitoso", response)
+        //console.log("Registro exitoso", response)
       }),
     );
   }
@@ -44,6 +44,13 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return this.isAuthenticated
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      return false;
+    }
+
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const isExpired = payload.exp * 1000 < Date.now();
+    return !isExpired;
   }
 }

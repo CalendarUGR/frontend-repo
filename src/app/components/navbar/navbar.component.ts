@@ -12,7 +12,7 @@ import { AuthService } from "../../services/auth.service"
 })
 export class NavbarComponent {
   isMenuOpen = false
-  isMobile = window.innerWidth < 768
+  isMobile = window.innerWidth < 1023
 
   constructor(
     private authService: AuthService,
@@ -21,14 +21,14 @@ export class NavbarComponent {
 
   @HostListener("window:resize", ["$event"])
   onResize(event: any) {
-    this.isMobile = window.innerWidth < 768
+    this.isMobile = window.innerWidth < 1023;
     if (!this.isMobile) {
-      this.isMenuOpen = false
+      this.isMenuOpen = false;
     }
   }
 
   toggleMenu() {
-    this.isMenuOpen = !this.isMenuOpen
+    this.isMenuOpen = !this.isMenuOpen;
   }
 
   logout() {

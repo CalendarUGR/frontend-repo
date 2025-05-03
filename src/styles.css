@@ -61,3 +61,6 @@ img {
     @apply bg-white rounded-lg p-6 mb-8 shadow border-l-4 border-primary;
   }
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

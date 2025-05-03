@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -14,7 +14,15 @@ export class ApiService {
     return this.http.post<T>(`${this.baseUrl}/${endpoint}`, body, { params });
   }
 
-  get<T>(endpoint: string, params?: { [key: string]: string | number }): Observable<T> {
+  get<T>(endpoint: string, params?: { [key: string]: string | number }, token?: string): Observable<T> {
+    let headers = new HttpHeaders();
+
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+
+      return this.http.get<T>(`${this.baseUrl}/${endpoint}`, { headers });
+    }
+
     return this.http.get<T>(`${this.baseUrl}/${endpoint}`, { params });
   }
 

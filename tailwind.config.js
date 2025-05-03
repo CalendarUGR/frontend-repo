@@ -3,6 +3,12 @@ module.exports = {
   darkMode: ["class"],
   content: ["./src/**/*.{html,ts}", "*.{js,ts,jsx,tsx,mdx}", "app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}"],
   theme: {
+    screends: {
+      sm: "480px",
+      md: "768px",
+      lg: "1023px",
+      xl: "1440px",
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",
