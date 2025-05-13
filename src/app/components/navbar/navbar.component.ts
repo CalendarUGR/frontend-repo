@@ -1,6 +1,6 @@
 import { Component, HostListener } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import { Router, RouterLink, RouterLinkActive } from "@angular/router"
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from "@angular/router"
 import { AuthService } from "../../services/auth.service"
 
 @Component({
@@ -13,11 +13,24 @@ import { AuthService } from "../../services/auth.service"
 export class NavbarComponent {
   isMenuOpen = false
   isMobile = window.innerWidth < 1023
+  isStudent = false
 
   constructor(
     private authService: AuthService,
     private router: Router,
-  ) {}
+  ) {
+
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.isMenuOpen = false; // Close the menu on route change
+      }
+    });
+
+    // if the user is logged in, check if the role is student
+    if (this.authService.isLoggedIn()) {
+      this.isStudent = this.authService.getIsStudent();
+    }
+  }
 
   @HostListener("window:resize", ["$event"])
   onResize(event: any) {

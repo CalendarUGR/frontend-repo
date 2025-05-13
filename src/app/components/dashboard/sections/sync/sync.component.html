@@ -1,0 +1,55 @@
+<div class="sync-container">
+  <section class="sync-header">
+    <h1>Sincronización con calendarios externos</h1>
+    <p>Utiliza el siguiente enlace para sincronizar tus eventos con tu calendario favorito.</p>
+  </section>
+
+  <section class="sync-url-container">
+    <div class="url-box">
+      <span class="url-text">{{ syncUrl }}</span>
+      <button class="copy-button" (click)="copyToClipboard()" title="Copiar al portapapeles">
+        <span class="icon-copy">📋</span>
+        <span>Copiar</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="sync-instructions">
+    <h2>Cómo sincronizar tu calendario</h2>
+
+    <div class="instruction-card">
+      <div class="card-content">
+        <h3>Obtén tu archivo ICS</h3>
+        <p>Visita el enlace proporcionado arriba para descargar tu archivo ICS con todos tus eventos.</p>
+      </div>
+      <div class="card-image">
+        <img src="assets/ics.png" style="width:50%;" alt="Descarga de archivo ICS" class="instruction-image">
+      </div>
+    </div>
+
+    <div class="instruction-card reverse">
+      <div class="card-content">
+        <h3>Importa a Google Calendar</h3>
+        <p>En Google Calendar, ve a Configuración > Importar y exporta > Importar, y selecciona tu archivo ICS.</p>
+      </div>
+      <div class="card-image">
+        <img src="assets/importar.png" alt="Importar a Google Calendar" class="instruction-image">
+      </div>
+    </div>
+
+    <div class="instruction-card">
+      <div class="card-content">
+        <h3>O mejor ... sincroniza tu calendario !</h3>
+        <p>Para sincronización automática, copia la URL y en Google Calendar ve a "Añadir calendario" > "Desde URL" y pega el enlace.</p>
+      </div>
+      <div class="card-image">
+        <img src="assets/url.png" alt="Sincronización automática" class="instruction-image">
+      </div>
+    </div>
+  </section>
+
+  <div class="toast" [class.show]="showToast">
+    {{ toastMessage }}
+    <button class="toast-close" (click)="showToast = false">×</button>
+  </div>
+</div>

@@ -70,7 +70,7 @@ export class LoginComponent {
         this.router.navigate(["/dashboard"])
       },
       error: (err) => {
-        this.errorMessage = "Credenciales incorrectas, intente de nuevo"
+        this.errorMessage = err.error
       },
     })
   }

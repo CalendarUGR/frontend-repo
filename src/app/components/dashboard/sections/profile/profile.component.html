@@ -1,1 +1,186 @@
-<p>profile works!</p>
+<div class="profile-container">
+  <!-- Profile header -->
+  <section class="profile-header">
+    <h1>Mi Perfil</h1>
+    <p>Gestiona tu información personal y preferencias.</p>
+  </section>
+
+  <section class="profile-content">
+
+    <!-- Profile information -->
+    <div class="profile-info">
+      <!-- Nickname -->
+      <div class="profile-field">
+        <label>Nickname</label>
+        <div class="editable-field">
+          <div *ngIf="!isEditingNickname" class="field-value-container">
+            <span class="field-value">{{ user.nickname }}</span>
+            <button class="edit-button" (click)="startEditingNickname()" title="Editar nickname">
+              <span class="edit-icon">✏️</span>
+            </button>
+          </div>
+          <div *ngIf="isEditingNickname" class="edit-input-container">
+            <input
+              type="text"
+              [(ngModel)]="newNickname"
+              class="edit-input"
+              placeholder="Nuevo nickname">
+            <div class="edit-actions">
+              <button class="confirm-button" (click)="saveNickname()" title="Guardar cambios">
+                <span class="confirm-icon">✓</span>
+              </button>
+              <button class="cancel-button" (click)="cancelEditingNickname()" title="Cancelar">
+                <span class="cancel-icon">✕</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="profile-field">
+        <label>Email</label>
+        <div class="field-value-container">
+          <span class="field-value">{{ user.email }}</span>
+          <span class="readonly-badge">No editable</span>
+        </div>
+      </div>
+
+      <!-- Role -->
+      <div class="profile-field">
+        <label>Rol</label>
+        <div class="field-value-container">
+          <span class="field-value">{{ this.getUIRole() }}</span>
+          <button *ngIf="this.user.role.name != 'ROLE_STUDENT'"  class="change-button" (click)="openRoleModal()">Cambiar</button>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="profile-field">
+        <label>Contraseña</label>
+        <div class="field-value-container">
+          <span class="field-value">**************</span>
+          <button class="change-button" (click)="openPasswordModal()">Cambiar</button>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="profile-field">
+        <label>Notificaciones</label>
+        <div class="toggle-container">
+          <label class="toggle">
+            <input
+              type="checkbox"
+              [checked]="user.notification"
+              (change)="toggleNotifications()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-status">{{ user.notification ? 'Activadas' : 'Desactivadas' }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--  Actions -->
+  <section class="account-actions">
+    <h2>Acciones de cuenta</h2>
+    <button class="delete-account-button" (click)="openDeactivateAccountModal()">
+      Dar de baja mi cuenta
+    </button>
+  </section>
+
+  <!-- Modal for changing role -->
+  <div class="modal-overlay" *ngIf="showRoleModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Cambiar rol</h3>
+        <button class="modal-close" (click)="closeRoleModal()">✕</button>
+      </div>
+      <div class="modal-content">
+        <p>Al cambiar tu rol, serás redirigido a la página de inicio de sesión para aplicar los cambios.</p>
+        <p>¿Estás seguro de que deseas continuar?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-cancel" (click)="closeRoleModal()">Cancelar</button>
+        <button class="modal-confirm" (click)="changeRole()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for changing password -->
+  <div class="modal-overlay" *ngIf="showPasswordModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Cambiar contraseña</h3>
+        <button class="modal-close" (click)="closePasswordModal()">✕</button>
+      </div>
+      <div class="modal-content">
+        <div class="password-form">
+          <div class="form-group">
+            <label for="current-password">Contraseña actual</label>
+            <input
+              type="password"
+              id="current-password"
+              [(ngModel)]="currentPassword"
+              class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="new-password">Nueva contraseña</label>
+            <input
+              type="password"
+              id="new-password"
+              [(ngModel)]="newPassword"
+              class="form-input">
+          </div>
+          <div class="form-group">
+            <label for="confirm-password">Confirmar contraseña</label>
+            <input
+              type="password"
+              id="confirm-password"
+              [(ngModel)]="confirmPassword"
+              class="form-input">
+          </div>
+          <div class="password-error" *ngIf="passwordError">
+            {{ passwordError }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-cancel" (click)="closePasswordModal()">Cancelar</button>
+        <button class="modal-confirm" (click)="changePassword()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for deleting account -->
+  <div class="modal-overlay" *ngIf="showDeleteAccountModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Dar de baja mi cuenta</h3>
+        <button class="modal-close" (click)="closeDeactivateAccountModal()">✕</button>
+      </div>
+      <div class="modal-content">
+        <p class="warning-text">Al confirmar, tu cuenta y todos tus datos personales serán eliminados permanentemente de acuerdo con tu derecho al borrado (RGPD y LOPDGDD). Esta acción es irreversible. ¿Estás seguro?</p>
+        <br>
+        <input
+          type="password"
+          [(ngModel)]="currentPassword"
+          class="form-input"
+          placeholder="Contraseña actual">
+        <div class="password-error" *ngIf="passwordError">
+          {{ passwordError }}
+      </div>
+      <div class="modal-footer">
+        <button class="modal-cancel" (click)="closeDeactivateAccountModal()">Cancelar</button>
+        <button class="modal-confirm" (click)="deactivateAccount()">Eliminar cuenta</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast de notificación -->
+  <div class="toast" [class.show]="showToast" [class.error]="isError">
+    {{ toastMessage }}
+    <button class="toast-close" (click)="showToast = false">×</button>
+  </div>
+</div>
+

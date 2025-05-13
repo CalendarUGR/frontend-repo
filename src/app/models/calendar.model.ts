@@ -33,3 +33,15 @@ export interface CalendarResponse {
   facultyEvents: ExtraClass[];
   classes: Class[];
 }
+
+export interface HolidayResponse {
+  date: string;
+  localName: string;
+  name: string;
+  countryCode: string;
+  fixed: boolean;
+  global: boolean;
+  counties?: string[] | null;
+  launchYear?: number | null;
+  types: string[];
+}

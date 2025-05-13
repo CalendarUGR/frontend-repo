@@ -1,5 +1,5 @@
 import { Component, Host, HostListener, ViewEncapsulation } from '@angular/core';
-import { CalendarOptions } from '@fullcalendar/core/index.js';
+import { CalendarOptions, EventInput } from '@fullcalendar/core/index.js';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import dayGridMonthPlugin from '@fullcalendar/daygrid';
@@ -10,7 +10,8 @@ import { CommonModule } from '@angular/common';
 
 import { CalendarService } from '../../../../services/calendar.service';
 import { Router } from '@angular/router';
-import { CalendarResponse } from '../../../../models/calendar.model';
+import { AllDayEvent } from '../../../../models/allDayEvent.model';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-calendar',
@@ -25,9 +26,12 @@ import { CalendarResponse } from '../../../../models/calendar.model';
 })
 export class CalendarComponent {
 
+  counter: number = 0;
+
   isMobile: boolean = window.innerWidth < 700;
   isModalOpen = false;
   selectedEvent: any = null;
+  allDayEvents: AllDayEvent[] = [];
 
   calendarOptions: CalendarOptions = {
     locale: esLocale,
@@ -36,11 +40,13 @@ export class CalendarComponent {
     themeSystem: 'standard',
     height: '90vh',
     weekends: false,
+    events: [],
     eventClick: this.handleEventClick.bind(this),
     eventDidMount: (info) => {
       if (info.event.id) {
         info.el.setAttribute('id', info.event.id);
         info.el.style.backgroundColor = info.event.extendedProps?.['backgroundColor'];
+        info.el.style.borderColor = info.event.extendedProps?.['backgroundColor'];
       }
     }
   };
@@ -48,6 +54,7 @@ export class CalendarComponent {
   constructor(private calendarService: CalendarService, private router: Router) {
 
     if (this.isMobile) {
+      this.calendarOptions.initialView = 'dayGridDay';
       this.calendarOptions.headerToolbar = {
         left: 'prev,next',
         center: '',
@@ -74,7 +81,9 @@ export class CalendarComponent {
     }
 
     // Call the function to get the entire calendar
-    this.getEntireCalendar();
+    this.initializeCalendar();
+    // this.getHolydayApi();
+    // this.getEntireCalendar();
 
   }
 
@@ -113,82 +122,189 @@ export class CalendarComponent {
     const hash = Array.from(subject).reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const hue = hash % 360; // Get a hue value between 0 and 360
     if (isDot) {
-      return `hsl(${hue}, 70%, 50%)`;
+      return `hsl(${hue}, 70%, 60%)`;
     }
     return `hsl(${hue}, 70%, 80%)`;
   }
 
   private getEventDays(spanishDay: string): string {
     switch (spanishDay) {
-      case 'Lunes':
+      case 'lunes':
         return 'mo';
-      case 'Martes':
+      case 'martes':
         return 'tu';
-      case 'Miércoles':
+      case 'miércoles':
         return 'we';
-      case 'Jueves':
+      case 'jueves':
         return 'th';
-      case 'Viernes':
+      case 'viernes':
         return 'fr';
-      case 'Sábado':
+      case 'sábado':
         return 'sa';
-      case 'Domingo':
+      case 'domingo':
         return 'su';
       default:
         return '';
     }
   }
 
-  private getEntireCalendar(): void {
+  private initializeCalendar(): void {
+    forkJoin({
+      holidays: this.calendarService.getHolydayApi(),
+      calendar: this.calendarService.getEntireCalendar()
+    }).subscribe({
+      next: ({ holidays, calendar }) => {
+        if (holidays) {
+          const filteredHolidays = holidays.filter(
+            (holiday) => holiday.counties?.includes('ES-AN') || !holiday.counties
+          );
 
-    this.calendarService.getEntireCalendar().subscribe({
-      next: (response) => {
-        const calendar: CalendarResponse = response; // a map with groupEvents, facultyEvents and classes
-        let counter: number = 0;
-        // First we are going to add the rcurring events (classes key)
-        this.calendarOptions.events = calendar.classes.map((event) => {
-          // Weekly recurrent events using rrule
-          const startDateTime = `${event.initDate}T${event.initHour}`;
-          const endDateTime = `${event.finishDate}T${event.finishHour}`;
-          const backgroundColor = this.generateBackgroundColor(event.subject, false);
-          const dotBackgroundColor = this.generateBackgroundColor(event.subject, true);
-          const eventId = `event-${counter++}`;
+          const holidayEvents = filteredHolidays.map((holiday) => {
+            const dayOfWeek = this.getEventDays(
+                new Date(holiday.date).toLocaleDateString('es-ES', { weekday: 'long' })
+            );
 
-          return {
-            id: eventId,
-            backgroundColor: dotBackgroundColor,
-            title: 'Aula: '+ event.classroom + ' - ' + event.subject + ' - Grupo : ' + event.group,
-            allDay: false,
-            extendedProps: {
+            this.allDayEvents.push({
+              date: holiday.date,
+              day: dayOfWeek
+            });
+
+            const startTime = `${holiday.date}T00:00:00`;
+            const endTime = `${holiday.date}T23:59:59`;
+            const eventId = `event-${this.counter++}`;
+
+            return {
+              id: eventId,
+              backgroundColor: 'rgb(228, 175, 174)',
+              title: holiday.localName,
+              allDay: true,
+              start: startTime,
+              end: endTime,
+              classNames: ['holiday-event'],
+              extendedProps: {
+                description: holiday.localName,
+                backgroundColor: 'rgb(184, 45, 42)',
+                location: 'Andalucía',
+                type: 'HOLIDAY',
+                day: new Date(holiday.date).toLocaleDateString('es-ES', { weekday: 'long' })
+              }
+            };
+          });
+
+          this.calendarOptions.events = holidayEvents;
+        }
+
+        if (calendar) {
+          const facultyEvents = calendar.facultyEvents.map((event) => {
+            const startTime = `${event.date}T${event.initHour}`;
+            const endTime = `${event.date}T${event.finishHour}`;
+            const weekDay = this.getEventDays(event.day);
+            const eventId = `event-${this.counter++}`;
+            const allDay = event.initHour === event.finishHour && event.initHour === '00:00:00';
+
+            if (allDay) {
+              this.allDayEvents.push({
+                date: event.date,
+                day: weekDay
+              });
+            }
+
+            return {
+              id: eventId,
+              backgroundColor: 'rgb(228, 175, 174)',
+              title: event.title + ' - ' + event.facultyName,
+              allDay: allDay,
+              start: startTime,
+              end: endTime,
+              classNames: ['faculty-event'],
+              extendedProps: {
+                backgroundColor: 'rgb(184, 45, 42)',
+                description: event.title + '.',
+                location: event.facultyName,
+                start: event.initHour,
+                end: event.finishHour,
+                type: event.type,
+                day: event.day
+              }
+            };
+          });
+
+          const classEvents = calendar.classes.map((event) => {
+            const startDateTime = `${event.initDate}T${event.initHour}`;
+            const endDateTime = `${event.finishDate}T${event.finishHour}`;
+            const backgroundColor = this.generateBackgroundColor(event.subject, false);
+            const dotBackgroundColor = this.generateBackgroundColor(event.subject, true);
+            const eventId = `event-${this.counter++}`;
+
+            const datesToExclude = this.allDayEvents
+              .filter((fac_ev) => fac_ev.day === this.getEventDays(event.day))
+              .map((fac_ev) => fac_ev.date);
+
+            return {
+              id: eventId,
+              backgroundColor: dotBackgroundColor,
+              title: 'Aula: ' + event.classroom + ' - ' + event.subject + ' - Grupo : ' + event.group,
+              allDay: false,
+              extendedProps: {
+                backgroundColor: backgroundColor,
+                description: 'Clase de la asignatura ' + event.subject + '.\nGrupo : ' + event.group + '.',
+                location: 'Aula: ' + event.classroom,
+                teachers: event.teachers,
+                url: event.subjectUrl,
+                start: event.initHour,
+                end: event.finishHour,
+                type: 'OFFICIAL',
+                day: event.day
+              },
+              rrule: {
+                freq: 'weekly',
+                interval: 1,
+                byweekday: [this.getEventDays(event.day)],
+                dtstart: startDateTime,
+                until: endDateTime
+              },
+              exdate: datesToExclude ? datesToExclude.map((date) => `${date}T${event.initHour}`) : []
+            };
+          });
+
+          const groupEvents = calendar.groupEvents.map((event) => {
+            const startTime = `${event.date}T${event.initHour}`;
+            const endTime = `${event.date}T${event.finishHour}`;
+            const backgroundColor = this.generateBackgroundColor(event.subjectName, false);
+            const dotBackgroundColor = this.generateBackgroundColor(event.subjectName, true);
+            const eventId = `event-${this.counter++}`;
+
+            return {
+              id: eventId,
               backgroundColor: backgroundColor,
-              description: 'Clase de la asignatura ' + event.subject + '.\nGrupo : ' + event.group + '.',
-              location: 'Aula: ' + event.classroom,
-              teachers: event.teachers,
-              url : event.subjectUrl,
-              start: event.initHour,
-              end: event.finishHour,
-              type: 'clase oficial',
-              day: event.day
-            },
-            rrule: {
-              freq: 'weekly',
-              interval: 1,
-              byweekday: [this.getEventDays(event.day)],
-              dtstart: startDateTime,
-              until: endDateTime
-            },
-            startTime: event.initHour,
-            endTime: event.finishHour,
-          };
-        });
+              title: 'Aula: ' + event.classroom + ' - ' + event.title + '.',
+              allDay: false,
+              start: startTime,
+              end: endTime,
+              extendedProps: {
+                backgroundColor: dotBackgroundColor,
+                description: 'Clase extra de la asignatura ' + event.subjectName + '.\nGrupo : ' + event.groupName + ': ' + event.title + '.',
+                location: 'Aula: ' + event.classroom,
+                teachers: event.teacher,
+                start: event.initHour,
+                end: event.finishHour,
+                type: event.type,
+                day: event.day
+              }
+            };
+          });
 
+          this.calendarOptions.events = (this.calendarOptions.events as EventInput[]).concat(
+            facultyEvents,
+            classEvents,
+            groupEvents
+          );
+        }
       },
       error: (error) => {
         console.error('Error fetching calendar data:', error);
       }
-
     });
-
   }
 
   handleEventClick(info: any) {
@@ -197,12 +313,14 @@ export class CalendarComponent {
       description: info.event.extendedProps?.description,
       location: info.event.extendedProps?.location,
       teachers: info.event.extendedProps?.teachers,
-      url: info.event.extendedProps?.url,
+      url: info.event.extendedProps?.url ? info.event.extendedProps?.url : '',
       initHour: info.event.extendedProps?.start,
       finishHour: info.event.extendedProps?.end,
-      day: info.event.extendedProps?.day
+      day: info.event.extendedProps?.day,
+      allDay: info.event.allDay
     };
     this.isModalOpen = true;
+
   }
 
   closeModal() {

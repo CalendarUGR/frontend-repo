@@ -1,1 +1,289 @@
-<p>events works!</p>
+<div class="events-container">
+  <!-- My Events -->
+  <section class="events-header">
+    <h1>Mis Eventos de {{currentYear}}</h1>
+    <p>Gestiona tus eventos creados.</p>
+  </section>
+
+  <section class="my-events">
+    <div class="events-dropdown-container">
+      <button class="dropdown-button events-dropdown-button" (click)="toggleEventsDropdown()">
+        <span>Ver mis eventos ({{ events.groupEvents.length + events.facultyEvents.length }})</span>
+        <span class="dropdown-icon">{{ showEventsDropdown ? '▲' : '▼' }}</span>
+      </button>
+
+      <div class="events-dropdown-content" *ngIf="showEventsDropdown">
+        <div class="search-container">
+          <input
+            type="text"
+            [(ngModel)]="eventFilter"
+            placeholder="Buscar por título, fecha o asignatura..."
+            class="search-input">
+        </div>
+
+        <!-- Group Events -->
+        <div class="events-section" *ngIf="filteredGroupEvents.length > 0">
+          <h3 class="events-section-title">Eventos de Grupo</h3>
+          <div class="events-list">
+            <div *ngFor="let event of filteredGroupEvents" class="event-item">
+              <div class="event-info">
+                <div class="event-title">{{ event.title }}</div>
+                <div class="event-details">
+                  <span class="event-date">{{ formatDate(event.date) }}</span>
+                  <span class="event-time">{{ formatTime(event.initHour) }} - {{ formatTime(event.finishHour) }}</span>
+                  <span class="event-location">Aula {{ event.classroom }}</span>
+                </div>
+                <div class="event-subject">{{ event.subjectName }} (Grupo {{ event.groupName }})</div>
+              </div>
+              <button class="delete-button" (click)="openDeleteModal(event.eventId, 'GROUP')" title="Eliminar evento">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Faculty Events -->
+        <div class="events-section" *ngIf="filteredFacultyEvents.length > 0">
+          <h3 class="events-section-title">Eventos de Facultad</h3>
+          <div class="events-list">
+            <div *ngFor="let event of filteredFacultyEvents" class="event-item">
+              <div class="event-info">
+                <div class="event-title">{{ event.title }}</div>
+                <div class="event-details">
+                  <span class="event-date">{{ formatDate(event.date) }}</span>
+                  <span class="event-location">Facultad {{ event.facultyName }}</span>
+                </div>
+              </div>
+              <button class="delete-button" (click)="openDeleteModal(event.eventId, 'FACULTY')" title="Eliminar evento">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- NO events -->
+        <div class="empty-events" *ngIf="filteredGroupEvents.length === 0 && filteredFacultyEvents.length === 0">
+          <p>No se encontraron eventos. {{ events.groupEvents.length + events.facultyEvents.length > 0 ? 'Prueba con otro filtro.' : 'Crea un nuevo evento abajo.' }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Creating event -->
+  <section class="create-event-header">
+    <h2 *ngIf="!creatingFacultyEvent">Crear Nuevo Evento de Grupo</h2>
+    <p *ngIf="!creatingFacultyEvent">Programa un nuevo evento para tu grupo académico.</p>
+    <h2 *ngIf="creatingFacultyEvent">Crear Nuevo Evento de Facultad</h2>
+    <p *ngIf="creatingFacultyEvent">Programa un nuevo evento para toda la facultad.</p>
+
+  </section>
+
+  <div *ngIf="isAdmin" class="toggle-container">
+    <label class="toggle-label">
+      <input
+        type="checkbox"
+        [checked]="creatingFacultyEvent"
+        (change)="toggleEventType()"
+        class="toggle-input">
+      Crear evento de facultad
+    </label>
+  </div>
+
+  <section class="create-event-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="event-title">Título del evento*</label>
+        <input
+          type="text"
+          id="event-title"
+          [(ngModel)]="newEvent.title"
+          placeholder="Ej: Corrección de la práctica X"
+          class="form-input">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="event-date">Fecha*</label>
+        <input
+          type="date"
+          id="event-date"
+          [(ngModel)]="newEvent.date"
+          (change)="updateDayOfWeek()"
+          class="form-input">
+      </div>
+      <div class="form-group">
+        <label for="event-day">Día de la semana*</label>
+        <input
+          type="text"
+          id="event-day"
+          [(ngModel)]="newEvent.day"
+          readonly
+          class="form-input readonly-input">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="event-init-hour">Hora de inicio*</label>
+        <input
+          type="time"
+          id="event-init-hour"
+          [(ngModel)]="newEvent.initHour"
+          [disabled]="allDay"
+          class="form-input">
+      </div>
+      <div class="form-group">
+        <label for="event-finish-hour">Hora de fin*</label>
+        <input
+          type="time"
+          id="event-finish-hour"
+          [(ngModel)]="newEvent.finishHour"
+          [disabled]="allDay"
+          class="form-input">
+      </div>
+    </div>
+
+    <div *ngIf="creatingFacultyEvent" class="form-row">
+      <div class="form-group">
+        <label class="toggle-label">
+          <input
+            type="checkbox"
+            [(ngModel)]="allDay"
+            class="toggle-input">
+          Todo el día
+        </label>
+      </div>
+    </div>
+
+    <div *ngIf="!creatingFacultyEvent" class="form-row">
+      <div class="form-group">
+        <label for="event-classroom">Aula*</label>
+        <input
+          type="text"
+          id="event-classroom"
+          [(ngModel)]="newEvent.classroom"
+          placeholder="Ej: 05"
+          class="form-input">
+      </div>
+      <div *ngIf="!creatingFacultyEvent" class="form-group">
+        <label for="event-teacher">Profesor*</label>
+        <input
+          type="text"
+          id="event-teacher"
+          [(ngModel)]="newEvent.teacher"
+          placeholder="Ej: María Martínez Gómez"
+          class="form-input">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group dropdown-group">
+        <label>Facultad*</label>
+        <div class="custom-dropdown">
+          <button
+            type="button"
+            class="dropdown-button"
+            (click)="toggleFacultyDropdown()">
+            {{ newEvent.facultyName || 'Selecciona una facultad' }}
+          </button>
+          <div class="dropdown-content" *ngIf="showFacultyDropdown">
+            <div
+              *ngFor="let faculty of enrrollmentInfo"
+              class="dropdown-item"
+              (click)="selectFaculty(faculty)">
+              {{ faculty.name }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!creatingFacultyEvent" class="form-row">
+      <div class="form-group dropdown-group">
+        <label>Grado*</label>
+        <div class="custom-dropdown">
+          <button
+            type="button"
+            class="dropdown-button"
+            [disabled]="!selectedFaculty"
+            (click)="toggleGradeDropdown()">
+            {{ newEvent.gradeName || 'Selecciona un grado' }}
+          </button>
+          <div class="dropdown-content" *ngIf="showGradeDropdown">
+            <div
+              *ngFor="let grade of selectedFaculty?.grades"
+              class="dropdown-item"
+              (click)="selectGrade(grade)">
+              {{ grade.name }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!creatingFacultyEvent" class="form-row">
+      <div class="form-group dropdown-group">
+        <label>Asignatura*</label>
+        <div class="custom-dropdown">
+          <button
+            type="button"
+            class="dropdown-button"
+            [disabled]="!selectedGrade"
+            (click)="toggleSubjectDropdown()">
+            {{ newEvent.subjectName || 'Selecciona una asignatura' }}
+          </button>
+          <div class="dropdown-content" *ngIf="showSubjectDropdown">
+            <div
+              *ngFor="let subject of selectedGrade?.subjects"
+              class="dropdown-item"
+              (click)="selectSubject(subject)">
+              {{ subject.name }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!creatingFacultyEvent" class="form-row">
+      <div class="form-group dropdown-group">
+        <label>Grupo*</label>
+        <div class="custom-dropdown">
+          <button
+            type="button"
+            class="dropdown-button"
+            [disabled]="!selectedSubject"
+            (click)="toggleGroupDropdown()">
+            {{ newEvent.groupName || 'Selecciona un grupo' }}
+          </button>
+          <div class="dropdown-content" *ngIf="showGroupDropdown">
+            <div
+              *ngFor="let group of selectedSubject?.groups"
+              class="dropdown-item"
+              (click)="selectGroup(group)">
+              {{ group }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="reset-button" (click)="resetForm()">Cancelar</button>
+      <button type="button" class="create-button" (click)="createEvent()">Crear Evento</button>
+    </div>
+  </section>
+
+  <!-- Toast de notificación -->
+  <div class="toast" [class.show]="showToast" [class.error]="isError">
+    {{ toastMessage }}
+    <button class="toast-close" (click)="showToast = false">×</button>
+  </div>
+</div>
+
+<div class="modal" *ngIf="showDeleteModal">
+  <div class="modal-content">
+    <h3 class="modal-title">Confirmar eliminación</h3>
+    <p class="modal-message">¿Estás seguro de que deseas eliminar este evento? Los suscritos a la asignatura no podrán verlo más.</p>
+    <div class="modal-actions">
+      <button class="cancel-button" (click)="closeDeleteModal()">Cancelar</button>
+      <button class="confirm-button" (click)="confirmDeleteEvent()">Eliminar</button>
+    </div>
+  </div>
+</div>

@@ -58,6 +58,18 @@
   margin-top: 10px;
 }
 
+.fc .faculty-event , .fc .holiday-event {
+  /* centering the text inside the box */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  /* not allowing text overflow */
+  overflow: auto;
+  text-overflow: ellipsis;
+  padding: 10px !important;
+}
+
 .fc .fc-event:hover {
   background-color: var(--primary-color);
   cursor : pointer;

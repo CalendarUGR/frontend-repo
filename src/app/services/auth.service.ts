@@ -10,25 +10,47 @@ import { User } from "../models/user.model"
 })
 export class AuthService {
 
-  private isAuthenticated: boolean = false;
   private readonly accessTokenKey: string = "access_token";
   private readonly refreshTokenKey: string = "refresh_token";
 
-  constructor( private apiService: ApiService) {}
+  private role: string = "";
+  private isStudent: boolean = false;
+
+  constructor(private apiService: ApiService) {
+
+    const accessToken = localStorage.getItem(this.accessTokenKey);
+
+    // Check if the user is already authenticated
+    this.setIsStudent(accessToken);
+
+  }
+
+  setIsStudent(accessToken: string | null = null): void {
+    if (accessToken) {
+      this.role = this.getRoleFromToken(accessToken);
+      if (this.role == "ROLE_STUDENT") {
+        this.isStudent = true;
+      }else {
+        this.isStudent = false;
+      }
+    }
+  }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
 
     return this.apiService.post<LoginResponse>("auth/login", credentials).pipe(
       tap((response) => {
-        this.isAuthenticated = true
-        localStorage.setItem(this.accessTokenKey, response.access_token)
-        localStorage.setItem(this.refreshTokenKey, response.refresh_token)
-        //console.log(response)
+        localStorage.clear();
+        localStorage.setItem(this.accessTokenKey, response.access_token);
+        localStorage.setItem(this.refreshTokenKey, response.refresh_token);
+        this.setIsStudent(response.access_token);
+        // console.log("setIsStudent", this.isStudent);
+        // console.log("Role", this.role);
       }),
     );
   }
 
-  register(registerData : RegisterRequest): Observable<User> {
+  register(registerData: RegisterRequest): Observable<User> {
 
     return this.apiService.post<User>("user/register", registerData).pipe(
       tap((response) => {
@@ -38,9 +60,7 @@ export class AuthService {
   }
 
   logout(): void {
-    this.isAuthenticated = false
-    localStorage.removeItem(this.accessTokenKey)
-    localStorage.removeItem(this.refreshTokenKey)
+    localStorage.clear();
   }
 
   isLoggedIn(): boolean {
@@ -53,4 +73,31 @@ export class AuthService {
     const isExpired = payload.exp * 1000 < Date.now();
     return !isExpired;
   }
+
+  getRole(): string {
+    return this.role;
+  }
+
+  getIsStudent(): boolean {
+    return this.isStudent;
+  }
+
+
+  decodeToken(token: string): any {
+    if (!token) return null;
+
+    const payload = token.split(".")[1]; // Extraer la segunda parte del JWT
+    try {
+      return JSON.parse(atob(payload)); // Decodificar Base64 y convertir a JSON
+    } catch (e) {
+      console.error("Error al decodificar el token:", e);
+      return null;
+    }
+  }
+
+  getRoleFromToken(token: string): string {
+    const decoded = this.decodeToken(token);
+    return decoded?.role || "";
+  }
+
 }

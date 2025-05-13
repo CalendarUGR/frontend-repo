@@ -20,8 +20,8 @@
           [(ngModel)]="loginData.password" required placeholder="Contraseña" class="form-input pr-10">
         <button type="button" (click)="togglePasswordVisibility()"
           class="absolute inset-y-0 right-0 flex items-center px-3 m-4 text-gray-500 hover:text-gray-700">
-          <span *ngIf="showPassword">👁️</span> <!-- Ícono para mostrar -->
-          <span *ngIf="!showPassword">🙈</span> <!-- Ícono para ocultar -->
+          <span *ngIf="showPassword">👁️</span>
+          <span *ngIf="!showPassword">🙈</span>
         </button>
       </div>
 

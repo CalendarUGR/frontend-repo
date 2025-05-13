@@ -132,6 +132,11 @@
 
 
 @media (max-width: 1023px) {
+
+  #menu{
+    background-color: var(--white) !important;
+  }
+
   .menu-toggle {
     display: block;
   }

@@ -1,0 +1,234 @@
+:host {
+  display: block;
+  --primary-color: rgb(184, 45, 42);
+  --secondary-color: rgb(228, 175, 174);
+  --white: #ffffff;
+  --text-color: #333333;
+  --background-color: #f5f5f5;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  line-height: 1.6;
+}
+
+.sync-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sync-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.sync-header h1 {
+  color: var(--primary-color);
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  font-weight: 800;
+}
+
+.sync-header p {
+  font-size: 1.3rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.sync-url-container {
+  margin-bottom: 1rem;
+  width: 70%;
+}
+
+.url-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  background-color: var(--white);
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.url-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  word-break: break-all;
+  flex: 1;
+  color : var(--text-color);
+}
+
+/* Subrayado */
+.url-text::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-color);
+  margin-top: 4px;
+}
+
+.copy-button {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-left: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s ease;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.copy-button:hover {
+  background-color: rgba(184, 45, 42, 0.8);
+}
+
+.icon-copy {
+  margin-right: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.sync-instructions {
+  margin-top: 3rem;
+}
+
+.sync-instructions h2 {
+  text-align: center;
+  color: var(--primary-color);
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  font-weight: 800;
+}
+
+.instruction-card {
+  display: flex;
+  align-items: center;
+  margin-bottom: 3rem;
+  background-color: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.instruction-card.reverse {
+  flex-direction: row-reverse;
+}
+
+.card-content {
+  flex: 1;
+  padding: 2rem;
+}
+
+.card-content h3 {
+  color: var(--primary-color);
+  font-size: 1.7rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.card-content p {
+  font-size: 1.2rem;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+}
+
+.card-image {
+  flex: 1;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(228, 175, 174, 0.1);
+}
+
+.instruction-image {
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Toast notification */
+.toast {
+  visibility: hidden;
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 16px;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  min-width: 250px;
+}
+
+.toast.show {
+  visibility: visible;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+@keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .instruction-card,
+  .instruction-card.reverse {
+    flex-direction: column;
+  }
+
+  .card-image {
+    width: 100%;
+    padding: 1rem;
+  }
+
+  .url-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .copy-button {
+    margin-left: 0;
+    margin-top: 1rem;
+    justify-content: center;
+  }
+}

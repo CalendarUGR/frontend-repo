@@ -13,14 +13,14 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
 
   console.log('INTERCEPTOR');
 
+  if (req.url.includes('auth/refresh') || req.url.includes('auth/login') || req.url.includes('user/register') || req.url.includes('user/activate')) {
+    return next(req);
+  }
+
   if (!accessToken) {
     console.log('NO ACCESS TOKEN');
     router.navigate(['/login']);
     return throwError(() => new Error('No access token found'));
-  }
-
-  if (req.url.includes('auth/refresh') || req.url.includes('auth/login') || req.url.includes('user/register')) {
-    return next(req);
   }
 
   const clonedRequest = req.clone({

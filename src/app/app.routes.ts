@@ -8,6 +8,7 @@ import { EventsComponent } from './components/dashboard/sections/events/events.c
 import { ProfileComponent } from './components/dashboard/sections/profile/profile.component';
 import { authGuard } from './guards/auth.guard';
 import { ActivateComponent } from './components/activate/activate.component';
+import { SyncComponent } from './components/dashboard/sections/sync/sync.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -18,6 +19,7 @@ export const routes: Routes = [
     component: DashboardComponent,
     children: [
       { path: 'calendar', component: CalendarComponent },
+      { path: 'sync', component: SyncComponent },
       { path: 'subscriptions', component: SubscriptionsComponent },
       { path: 'events', component: EventsComponent },
       { path: 'profile', component: ProfileComponent },

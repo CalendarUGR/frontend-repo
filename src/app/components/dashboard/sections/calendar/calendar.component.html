@@ -14,11 +14,12 @@
       <h2 class="text-xl font-bold mb-4">{{ selectedEvent?.title }}</h2>
       <p class="mb-2"><strong>Descripción:</strong> {{ selectedEvent?.description }}</p>
       <p class="mb-2"><strong>Ubicación:</strong> {{ selectedEvent?.location }}</p>
-      <p class="mb-2"><strong>Profesores:</strong> {{ selectedEvent?.teachers }}</p>
+      <p class="mb-2" *ngIf="!selectedEvent?.allDay"><strong>Profesores:</strong> {{ selectedEvent?.teachers }}</p>
       <p class="mb-2"><strong>Día:</strong> {{ selectedEvent?.day }}</p>
-      <p class="mb-2"><strong>Inicio:</strong> {{ selectedEvent?.initHour }}</p>
-      <p class="mb-2"><strong>Fin:</strong> {{ selectedEvent?.finishHour }}</p>
-      <p class="mb-2">
+      <p class="mb-2" *ngIf="!selectedEvent?.allDay"><strong>Inicio:</strong> {{ selectedEvent?.initHour }}</p>
+      <p class="mb-2" *ngIf="!selectedEvent?.allDay"><strong>Fin:</strong> {{ selectedEvent?.finishHour }}</p>
+      <p class="mb-2" *ngIf="selectedEvent?.allDay"><strong>Todo el día</strong></p>
+      <p class="mb-2" *ngIf="selectedEvent?.url">
         <a
         class="text-blue-500 hover:underline"
         [href]="selectedEvent?.url"
