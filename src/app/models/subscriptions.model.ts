@@ -28,3 +28,8 @@ export interface Subscription {
   subject: string;
   group: string;
 }
+
+export interface TeacherClasses {
+  teacherName: string;
+  classes: Subscription[];
+}

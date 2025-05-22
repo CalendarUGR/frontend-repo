@@ -1,9 +1,13 @@
 import { Component } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
-import { Subscription, Fields, GradeFaculty, SubjectGrade } from "../../../../models/subscriptions.model"
-import { SubscriptionService } from "../../../../services/subscription.service"
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { Router } from "@angular/router"
+
+import { Subscription, Fields, GradeFaculty, SubjectGrade, TeacherClasses } from "../../../../models/subscriptions.model"
+import { SubscriptionService } from "../../../../services/subscription.service"
+import { AuthService } from "../../../../services/auth.service"
 
 @Component({
   selector: "app-subscriptions",
@@ -13,23 +17,25 @@ import { Router } from "@angular/router"
   styleUrls: ["./subscriptions.component.css"],
 })
 export class SubscriptionsComponent {
-  // Datos de ejemplo usando las interfaces especificadas
+
   fields: Fields = []
 
-  // Asignaturas y grupos por grado
   subjectsByGrade: SubjectGrade = []
 
-  // Suscripciones actuales
   subscriptions: Subscription[] = []
+
+  teacherClasses: TeacherClasses[] = []
 
   // New subnscription parameters
   selectedGradeFaculty: GradeFaculty | null = null
   selectedSubject: string | null = null
   selectedGroup: string | null = null
+  selectedTeacherClasses: TeacherClasses | null = null
 
   // Browser filters
   filterGrade = ""
   filterSubject = ""
+  filterTeacher = ""
 
   // Show or hide dropdowns
   showFieldDropdown = false
@@ -38,12 +44,36 @@ export class SubscriptionsComponent {
   // Helper to get object keys
   objectKeys = Object.keys
 
-  constructor(private subscriptionService: SubscriptionService, private router: Router) {
+  isStudent = false
+  showTeacherClassesModal = false;
+  teacherInput$ = new Subject<string>();
+
+  ngOnInit() {
+    this.teacherInput$.pipe(
+      debounceTime(300)
+    ).subscribe(value => {
+      this.subscriptionService.getTeacherClasses(value).subscribe({
+        next: (teacherClasses) => {
+          this.teacherClasses = teacherClasses || [];
+        },
+        error: (err) => {
+          console.error("Error al obtener las clases del profesor:", err);
+          this.teacherClasses = [];
+        },
+      });
+    });
+  }
+
+  constructor(private subscriptionService: SubscriptionService, private authService: AuthService, private router: Router) {
     // Fetch subscriptions from the service
     this.updateSubscriptions();
 
     // Fetch fields from the service
     this.updateFields();
+
+    if (this.authService.isLoggedIn()) {
+      this.isStudent = this.authService.getIsStudent();
+    }
   }
 
   updateSubscriptions(): void {
@@ -120,6 +150,12 @@ export class SubscriptionsComponent {
     return result;
   }
 
+  get filteredTeachers(): { teacherName: string; classes: Subscription[] }[] {
+    if (!this.filterTeacher) return this.teacherClasses;
+
+    return this.teacherClasses;
+  }
+
   // Grouping subscriptions by faculty
   get groupedSubscriptions(): { [faculty: string]: { [grade: string]: { [subject: string]: string[] } } } {
     const grouped: { [faculty: string]: { [grade: string]: { [subject: string]: string[] } } } = {}
@@ -178,23 +214,23 @@ export class SubscriptionsComponent {
   subscribe(): void {
     if (this.selectedGradeFaculty && this.selectedSubject && this.selectedGroup) {
 
-        const newSubscription: Subscription = {
-          faculty: this.selectedGradeFaculty.faculty,
-          grade: this.selectedGradeFaculty.grade,
-          subject: this.selectedSubject,
-          group: this.selectedGroup,
-        }
+      const newSubscription: Subscription = {
+        faculty: this.selectedGradeFaculty.faculty,
+        grade: this.selectedGradeFaculty.grade,
+        subject: this.selectedSubject,
+        group: this.selectedGroup,
+      }
 
-        this.subscriptionService.addSubscription(newSubscription).subscribe({
-          next: () => {
-            this.showNotification("Suscripción añadida correctamente ✅");
-            this.updateSubscriptions();
-            this.softResetForm();
-          },
-          error: (err) => {
-            this.showNotification("La suscripción ya existe o no es válida ( Puede que no tengamos su horario 😔 ).");
-          },
-        });
+      this.subscriptionService.addSubscription(newSubscription).subscribe({
+        next: () => {
+          this.showNotification("Suscripción añadida correctamente ✅");
+          this.updateSubscriptions();
+          this.softResetForm();
+        },
+        error: (err) => {
+          this.showNotification("La suscripción ya existe o no es válida ( Puede que no tengamos su horario 😔 ).");
+        },
+      });
     }
   }
 
@@ -231,6 +267,53 @@ export class SubscriptionsComponent {
     this.selectedSubject = null
     this.selectedGroup = null
     this.filterSubject = ""
+  }
+
+  // Teacher classes related
+  onTeacherInputChange(value: string) {
+    this.teacherInput$.next(value);
+  }
+
+  selectTeacher(teacher: string) {
+    this.selectedTeacherClasses = this.teacherClasses.find((t) => t.teacherName === teacher) || null
+    this.showSubjectDropdown = false
+    this.filterTeacher = ""
+    this.showTeacherClassesModal = true
+  }
+
+  closeTeacherClassesModal() {
+    this.showTeacherClassesModal = false;
+  }
+
+  confirmSubscribeToTeacherClasses() {
+    this.showTeacherClassesModal = false;
+    this.subscribeToTeacherClasses();
+  }
+
+  subscribeToTeacherClasses() {
+    if (this.selectedTeacherClasses) {
+      this.subscriptionService.subscribeBatching(this.selectedTeacherClasses.classes).subscribe({
+        next: () => {
+          this.showNotification("Suscripciones añadidas correctamente ✅");
+          this.updateSubscriptions();
+          this.softResetForm();
+        }
+        , error: (err) => {
+          console.error("Error al añadir las suscripciones:", err);
+          this.showNotification("Error al añadir las suscripciones. ❌");
+        }
+      })
+    }
+  }
+
+  deleteSubscriptionFromTeacher(faculty: string, grade: string, subject: string, group: string) {
+    // Remove the sub from the teacher's classes local selectedTeacherClasses
+    if (this.selectedTeacherClasses) {
+      this.selectedTeacherClasses.classes = this.selectedTeacherClasses.classes.filter((sub) => {
+        return !(sub.faculty === faculty && sub.grade === grade && sub.subject === subject && sub.group === group) // Filter out the subscription to be deleted
+      })
+    }
+
   }
 
   // Notification system

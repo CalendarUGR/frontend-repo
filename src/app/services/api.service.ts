@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ApiService {
-  private readonly baseUrl = 'http://localhost:8090/calendarugr/v1';
+  private readonly baseUrl = 'http://172.25.190.139:8090/calendarugr/v1';
 
   constructor(private http: HttpClient) {}
 

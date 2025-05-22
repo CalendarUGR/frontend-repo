@@ -5,6 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import dayGridMonthPlugin from '@fullcalendar/daygrid';
 import esLocale from '@fullcalendar/core/locales/es';
 import rrulePlugin from '@fullcalendar/rrule'
+import timeGridPlugin from '@fullcalendar/timegrid';
 import { CommonModule } from '@angular/common';
 
 
@@ -35,11 +36,12 @@ export class CalendarComponent {
 
   calendarOptions: CalendarOptions = {
     locale: esLocale,
-    plugins: [dayGridPlugin, dayGridMonthPlugin, rrulePlugin],
-    initialView: 'dayGridMonth',
+    initialView: 'timeGridWeek',
+    plugins: [dayGridPlugin, timeGridPlugin, rrulePlugin, dayGridMonthPlugin],
     themeSystem: 'standard',
     height: '90vh',
     weekends: false,
+    eventMinHeight: 50,
     events: [],
     eventClick: this.handleEventClick.bind(this),
     eventDidMount: (info) => {
@@ -54,7 +56,7 @@ export class CalendarComponent {
   constructor(private calendarService: CalendarService, private router: Router) {
 
     if (this.isMobile) {
-      this.calendarOptions.initialView = 'dayGridDay';
+      this.calendarOptions.initialView = 'timeGridDay';
       this.calendarOptions.headerToolbar = {
         left: 'prev,next',
         center: '',
@@ -63,14 +65,14 @@ export class CalendarComponent {
 
       this.calendarOptions.footerToolbar = {
         left: '',
-        center: 'dayGridMonth,dayGridWeek,dayGridDay',
+        center: 'dayGridMonth,timeGridWeek,timeGridDay',
         right: ''
       };
     } else {
       this.calendarOptions.headerToolbar = {
         left: 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,dayGridWeek,dayGridDay'
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
       };
 
       this.calendarOptions.footerToolbar = {
@@ -99,14 +101,14 @@ export class CalendarComponent {
 
       this.calendarOptions.footerToolbar = {
         left: '',
-        center: 'dayGridMonth,dayGridWeek,dayGridDay',
+        center: 'dayGridMonth,timeGridWeek,timeGridDay',
         right: ''
       };
     } else {
       this.calendarOptions.headerToolbar = {
         left: 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,dayGridWeek,dayGridDay'
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
       };
 
       this.calendarOptions.footerToolbar = {
@@ -187,7 +189,8 @@ export class CalendarComponent {
                 location: 'Andalucía',
                 type: 'HOLIDAY',
                 day: new Date(holiday.date).toLocaleDateString('es-ES', { weekday: 'long' })
-              }
+              },
+
             };
           });
 
@@ -209,6 +212,15 @@ export class CalendarComponent {
               });
             }
 
+            const duration = (() => {
+              const [sh, sm, ss] = event.initHour.split(':').map(Number);
+              const [eh, em, es] = event.finishHour.split(':').map(Number);
+              const start = sh * 3600 + sm * 60 + ss;
+              const end = eh * 3600 + em * 60 + es;
+              const diff = end - start;
+              return diff > 0 ? { seconds: diff } : { hours: 1 };
+            })();
+
             return {
               id: eventId,
               backgroundColor: 'rgb(228, 175, 174)',
@@ -225,7 +237,8 @@ export class CalendarComponent {
                 end: event.finishHour,
                 type: event.type,
                 day: event.day
-              }
+              },
+              duration: duration
             };
           });
 
@@ -239,6 +252,15 @@ export class CalendarComponent {
             const datesToExclude = this.allDayEvents
               .filter((fac_ev) => fac_ev.day === this.getEventDays(event.day))
               .map((fac_ev) => fac_ev.date);
+
+            const duration = (() => {
+              const [sh, sm, ss] = event.initHour.split(':').map(Number);
+              const [eh, em, es] = event.finishHour.split(':').map(Number);
+              const start = sh * 3600 + sm * 60 + ss;
+              const end = eh * 3600 + em * 60 + es;
+              const diff = end - start;
+              return diff > 0 ? { seconds: diff } : { hours: 1 };
+            })();
 
             return {
               id: eventId,
@@ -263,7 +285,8 @@ export class CalendarComponent {
                 dtstart: startDateTime,
                 until: endDateTime
               },
-              exdate: datesToExclude ? datesToExclude.map((date) => `${date}T${event.initHour}`) : []
+              exdate: datesToExclude ? datesToExclude.map((date) => `${date}T${event.initHour}`) : [],
+              duration: duration
             };
           });
 
@@ -273,6 +296,15 @@ export class CalendarComponent {
             const backgroundColor = this.generateBackgroundColor(event.subjectName, false);
             const dotBackgroundColor = this.generateBackgroundColor(event.subjectName, true);
             const eventId = `event-${this.counter++}`;
+
+            const duration = (() => {
+              const [sh, sm, ss] = event.initHour.split(':').map(Number);
+              const [eh, em, es] = event.finishHour.split(':').map(Number);
+              const start = sh * 3600 + sm * 60 + ss;
+              const end = eh * 3600 + em * 60 + es;
+              const diff = end - start;
+              return diff > 0 ? { seconds: diff } : { hours: 1 };
+            })();
 
             return {
               id: eventId,
@@ -290,7 +322,8 @@ export class CalendarComponent {
                 end: event.finishHour,
                 type: event.type,
                 day: event.day
-              }
+              },
+              duration: duration
             };
           });
 
@@ -306,6 +339,7 @@ export class CalendarComponent {
       }
     });
   }
+
 
   handleEventClick(info: any) {
     this.selectedEvent = {

@@ -17,7 +17,6 @@
   padding: 2rem;
 }
 
-/* Estilos para los encabezados */
 .subscription-header,
 .add-subscription-header {
   text-align: center;
@@ -321,6 +320,211 @@
   cursor: not-allowed;
 }
 
+.search-container-professor {
+  padding: 0.8rem;
+  border-bottom: 1px solid #eeeeee;
+  background-color: var(--white);
+  margin-bottom: 1rem;
+  border-radius: 8px 8px 0 0;
+}
+
+.search-input-professor {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1.5px solid var(--secondary-color);
+  border-radius: 6px;
+  font-size: 1rem;
+  color: var(--text-color);
+  background-color: white;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.search-input-professor:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(184, 45, 42, 0.1);
+}
+
+
+.search-container-professor {
+  position: relative;
+}
+
+.dropdown-items-professor {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 320px;
+  overflow-y: auto;
+  background-color: var(--white);
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  z-index: 30;
+  margin-top: 0.2rem;
+}
+
+.professor-item {
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text-color);
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.professor-item:hover {
+  background-color: rgba(228, 175, 174, 0.2);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: var(--white);
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #777;
+}
+
+.modal-content {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.modal-cancel,
+.modal-confirm,
+.modal-delete {
+  padding: 0.8rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.modal-cancel {
+  background-color: #f1f1f1;
+  border: none;
+  color: #666;
+}
+
+.modal-cancel:hover {
+  background-color: #e1e1e1;
+}
+
+.modal-confirm {
+  background-color: var(--primary-color);
+  border: none;
+  color: var(--white);
+}
+
+.modal-confirm:hover {
+  background-color: rgba(184, 45, 42, 0.8);
+}
+
+.modal-delete {
+  background-color: var(--danger-color);
+  border: none;
+  color: var(--white);
+}
+
+.modal-delete:hover {
+  background-color: rgba(211, 47, 47, 0.8);
+}
+
+.teacher-classes-list {
+  max-height: 220px;
+  overflow-y: auto;
+  margin: 1rem 0;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background: var(--background-color);
+  padding: 0.5rem 0;
+}
+
+.class-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 1rem;
+  color: var(--text-color);
+  background: var(--white);
+}
+
+.class-item:last-child {
+  border-bottom: none;
+}
+
+.class-name {
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 0 0.3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+  background-color: rgba(184, 45, 42, 0.1);
+}
+
 /* Toast notification */
 .toast {
   visibility: hidden;
@@ -391,4 +595,57 @@
   .groups-container {
     margin-left: 1rem;
   }
+
+  /* Little buttons */
+  .delete-button {
+    padding: 0 0.2rem;
+    font-size: 0.8rem;
+  }
+  .subscribe-button,
+  .reset-button {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .subscribe-button,
+  .reset-button {
+    min-width: 100px;
+  }
+  .add-subscription-header h2 {
+    font-size: 1.5rem;
+  }
+  .add-subscription-header p {
+    font-size: 1rem;
+  }
+
+  .modal {
+    width: 95%;
+  }
+  .modal-footer {
+    flex-direction: column;
+  }
+  .modal-cancel,
+  .modal-confirm,
+  .modal-delete {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  .modal-cancel {
+    margin-bottom: 0;
+  }
+  .modal-header h3 {
+    font-size: 1.5rem;
+  }
+  .modal-header {
+    padding: 1rem;
+  }
+  .modal-content {
+    padding: 1rem;
+  }
+  .modal-footer {
+    padding: 1rem;
+  }
+  .modal-close {
+    font-size: 1rem;
+  }
+
 }

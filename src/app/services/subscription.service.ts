@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { Observable, tap } from 'rxjs';
-import { Fields, SubjectGrade, Subscription } from '../models/subscriptions.model';
+import { Fields, SubjectGrade, Subscription, TeacherClasses } from '../models/subscriptions.model';
 
 @Injectable({
   providedIn: 'root'
@@ -75,6 +75,31 @@ export class SubscriptionService {
     return this.apiService.get<SubjectGrade>(`schedule-consumer/subjects-groups`, params).pipe(
       tap((response) => {
         //console.log('Subjects by grade response', response);
+      })
+    );
+  }
+
+  // Get teacherClasses
+
+  getTeacherClasses(value: string): Observable<TeacherClasses[]> {
+    const access_token: string = localStorage.getItem('access_token') || '';
+    const params = {
+      'partialTeacherName': value
+    }
+
+    return this.apiService.get<TeacherClasses[]>('schedule-consumer/teacher-classes', params, access_token).pipe(
+      tap((response) => {
+        //console.log('Teacher classes response', response);
+      })
+    );
+  }
+
+  subscribeBatching(subscriptions: Subscription[]): Observable<any> {
+    const access_token: string = localStorage.getItem('access_token') || '';
+
+    return this.apiService.post<any>('academic-subscription/subscription-batching', subscriptions, {}, access_token).pipe(
+      tap((response) => {
+        //console.log('Batch subscription response', response);
       })
     );
   }

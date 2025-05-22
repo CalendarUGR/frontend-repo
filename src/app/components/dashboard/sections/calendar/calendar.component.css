@@ -46,16 +46,28 @@
 }
 
 .fc .fc-event {
-  /*background-color: var(--secondary-color);*/
   color: var(--black);
   border: none;
   border-radius: 4px;
   padding: 2px 4px;
   font-size: 0.9rem;
-  font-weight: 400;
-  height:max-content;
-  min-height: 125px;
-  margin-top: 10px;
+}
+
+.fc-daygrid-dot-event .fc-event-title,
+.fc-v-event .fc-event-title {
+  font-weight: 500;
+  color : black;
+}
+
+
+.fc .fc-timegrid-event,
+.fc .fc-timegrid-event .fc-event-main {
+  color: var(--text-color) !important;
+  border: none !important;
+  border-radius: 4px !important;
+  font-size: 0.9rem !important;
+  font-weight: 400 !important;
+  padding: 2px 4px !important;
 }
 
 .fc .faculty-event , .fc .holiday-event {

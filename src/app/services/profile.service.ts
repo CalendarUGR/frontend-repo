@@ -46,7 +46,7 @@ export class ProfileService {
   updateNotificationSettings(enabled: boolean): Observable<boolean> {
     const access_token: string = localStorage.getItem('access_token') || '';
 
-    if (!enabled) {
+    if (enabled) {
       return this.apiService.put<boolean>('user/deactivate-notifications', {}, {}, access_token).pipe(
         tap((response) => {
           //console.log('Subscriptions response', response);

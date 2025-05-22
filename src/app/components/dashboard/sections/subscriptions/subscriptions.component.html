@@ -23,9 +23,7 @@
             <div class="groups-container">
               <div *ngFor="let group of groupedSubscriptions[faculty][grade][subject]" class="group-item">
                 <span class="group-name">Grupo: {{ group }}</span>
-                <button
-                  class="delete-button"
-                  (click)="deleteSubscriptionByParams(faculty, grade, subject, group)"
+                <button class="delete-button" (click)="deleteSubscriptionByParams(faculty, grade, subject, group)"
                   title="Eliminar suscripción">
                   ✕
                 </button>
@@ -37,7 +35,7 @@
     </div>
   </section>
 
-  <!-- Sección de añadir nueva suscripción -->
+  <!-- Section to add a new subscription -->
   <section class="add-subscription-header">
     <h2>Añadir Nueva Suscripción</h2>
     <p>Selecciona la facultad, grado, asignatura y grupo al que quieres suscribirte.</p>
@@ -48,22 +46,19 @@
       <div class="dropdown">
         <button class="dropdown-button" (click)="toggleFieldDropdown()">
           {{ selectedGradeFaculty ?
-             selectedGradeFaculty.faculty + ' - ' + selectedGradeFaculty.grade :
-             'Selecciona el grado' }}
+          selectedGradeFaculty.faculty + ' - ' + selectedGradeFaculty.grade :
+          'Selecciona el grado' }}
         </button>
         <div class="dropdown-content" *ngIf="showFieldDropdown">
           <div class="search-container">
-            <input
-              type="text"
-              [(ngModel)]="filterGrade"
-              placeholder="Busca tu grado..."
-              (click)="$event.stopPropagation()"
-              class="search-input">
+            <input type="text" [(ngModel)]="filterGrade" placeholder="Busca tu grado..."
+              (click)="$event.stopPropagation()" class="search-input">
           </div>
           <div class="dropdown-items">
             <div *ngFor="let fieldGrade of filteredFields">
               <div class="field-item">{{ fieldGrade.field }}</div>
-              <div *ngFor="let gradeFaculty of fieldGrade.grades" class="grade-item" (click)="selectGradeFaculty(gradeFaculty)">
+              <div *ngFor="let gradeFaculty of fieldGrade.grades" class="grade-item"
+                (click)="selectGradeFaculty(gradeFaculty)">
                 <span class="grade-label">{{ gradeFaculty.grade }}</span>
                 <span class="faculty-label">{{ gradeFaculty.faculty }}</span>
               </div>
@@ -75,20 +70,17 @@
       <div class="dropdown" *ngIf="selectedGradeFaculty">
         <button class="dropdown-button" (click)="toggleSubjectDropdown()">
           {{ selectedSubject && selectedGroup ?
-             selectedSubject + ' - ' + selectedGroup :
-             'Selecciona Asignatura y Grupo' }}
+          selectedSubject + ' - ' + selectedGroup :
+          'Selecciona Asignatura y Grupo' }}
         </button>
         <div class="dropdown-content" *ngIf="showSubjectDropdown">
           <div class="search-container">
-            <input
-              type="text"
-              [(ngModel)]="filterSubject"
-              placeholder="Buscar asignatura..."
-              (click)="$event.stopPropagation()"
-              class="search-input">
+            <input type="text" [(ngModel)]="filterSubject" placeholder="Buscar asignatura..."
+              (click)="$event.stopPropagation()" class="search-input">
           </div>
           <div class="dropdown-items">
-            <div *ngFor="let item of filteredSubjectsAndGroups" class="subject-group-item" (click)="selectSubjectAndGroup(item.subject, item.group)">
+            <div *ngFor="let item of filteredSubjectsAndGroups" class="subject-group-item"
+              (click)="selectSubjectAndGroup(item.subject, item.group)">
               <span class="subject-name">{{ item.subject }}</span>
               <span class="group-name">{{ item.group }}</span>
             </div>
@@ -98,21 +90,72 @@
     </div>
 
     <div class="action-buttons">
-      <button
-        class="subscribe-button"
-        [disabled]="!selectedGradeFaculty || !selectedSubject || !selectedGroup"
+      <button class="subscribe-button" [disabled]="!selectedGradeFaculty || !selectedSubject || !selectedGroup"
         (click)="subscribe()">
         Suscribirme
       </button>
-      <button
-        class="reset-button"
-        (click)="resetForm()">
+      <button class="reset-button" (click)="resetForm()">
         🗘
       </button>
     </div>
   </section>
 
-  <!-- Toast de notificación -->
+
+  <div *ngIf="!isStudent">
+    <section class="add-subscription-header">
+      <h2>Buscar Clases por Profesor</h2>
+      <p>Busca tu nombre directamente para suscribirte directamente a todas tus clases.</p>
+    </section>
+
+    <section class="add-subscription">
+      <div class="search-container-professor">
+        <input type="text" [(ngModel)]="filterTeacher" placeholder="Introduce el nombre del profesor..."
+          (ngModelChange)="onTeacherInputChange($event)" class="search-input-professor" autocomplete="off" />
+        <div class="dropdown-items-professor" *ngIf="filteredTeachers.length > 0 && filterTeacher.length > 3">
+          <div *ngFor="let teacher of filteredTeachers" class="professor-item"
+            (click)="selectTeacher(teacher.teacherName)">
+            {{ teacher.teacherName }}
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Modal for subscribing to all classes of a teacher -->
+  <div class="modal-overlay" *ngIf="showTeacherClassesModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Suscribirse a clases del profesor</h3>
+        <button class="modal-close" (click)="closeTeacherClassesModal()">✕</button>
+      </div>
+      <div class="modal-content">
+        <p>
+          Vas a suscribirte a <b>todas las clases</b> del profesor
+          <b>{{ this.selectedTeacherClasses?.teacherName }}</b>.
+        </p>
+        <!-- Lista de clases scrolleable -->
+        <div class="teacher-classes-list">
+          <div *ngFor="let classItem of this.selectedTeacherClasses?.classes" class="class-item">
+            <span class="class-name">
+              {{ classItem.grade }} - {{ classItem.subject }} - {{ classItem.group }}
+            </span>
+            <button class="delete-button"
+              (click)="deleteSubscriptionFromTeacher(classItem.faculty, classItem.grade, classItem.subject, classItem.group)"
+              title="Eliminar suscripción">
+              ✕
+            </button>
+          </div>
+        </div>
+        <p>¿Estás seguro de que deseas continuar?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-cancel" (click)="closeTeacherClassesModal()">Cancelar</button>
+        <button class="modal-confirm" (click)="confirmSubscribeToTeacherClasses()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification toast -->
   <div class="toast" [class.show]="showToast">
     {{ toastMessage }}
     <button class="toast-close" (click)="showToast = false">×</button>
