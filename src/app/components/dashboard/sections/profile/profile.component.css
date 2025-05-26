@@ -1,14 +1,7 @@
 :host {
   display: block;
-  --primary-color: rgb(184, 45, 42);
-  --secondary-color: rgb(228, 175, 174);
-  --white: #ffffff;
-  --text-color: #333333;
-  --background-color: #f5f5f5;
   --danger-color: #d32f2f;
   --success-color: #388e3c;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: var(--text-color);
   background-color: var(--background-color);
   line-height: 1.6;
 }
@@ -19,7 +12,6 @@
   padding: 2rem;
 }
 
-/* Estilos para el encabezado */
 .profile-header {
   text-align: center;
   margin-bottom: 2rem;
@@ -38,7 +30,6 @@
   margin: 0 auto;
 }
 
-/* Estilos para el contenido del perfil */
 .profile-content {
   background-color: var(--white);
   border-radius: 12px;
@@ -50,7 +41,6 @@
   margin-bottom: 2rem;
 }
 
-/* Estilos para la foto de perfil */
 .profile-photo-container {
   display: flex;
   flex-direction: column;
@@ -88,7 +78,6 @@
   color: var(--white);
 }
 
-/* Estilos para la información del perfil */
 .profile-info {
   flex: 1;
   min-width: 200px;
@@ -210,7 +199,6 @@
   color: var(--white);
 }
 
-/* Estilos para el toggle de notificaciones */
 .toggle-container {
   display: flex;
   align-items: center;
@@ -266,7 +254,6 @@ input:checked + .toggle-slider:before {
   font-size: 0.9rem;
 }
 
-/* Estilos para las acciones de cuenta */
 .account-actions {
   background-color: var(--white);
   border-radius: 12px;
@@ -297,7 +284,6 @@ input:checked + .toggle-slider:before {
   color: var(--white);
 }
 
-/* Estilos para los modales */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -394,7 +380,6 @@ input:checked + .toggle-slider:before {
   background-color: rgba(211, 47, 47, 0.8);
 }
 
-/* Estilos para el formulario de contraseña */
 .password-form {
   display: flex;
   flex-direction: column;

@@ -21,6 +21,8 @@ export class RegisterComponent {
     password: ""
   }
 
+  showBetaInfo = false;
+
   showPassword1: boolean = false;
   showPassword2: boolean = false;
 

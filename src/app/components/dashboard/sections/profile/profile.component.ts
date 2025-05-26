@@ -184,7 +184,7 @@ export class ProfileComponent implements OnInit {
         this.goToLogin();
       },
       error: (error) => {
-        this.showNotification("Error al desactivar la cuenta", true); // Mostrar notificación de error
+        this.showNotification("Error al desactivar la cuenta: " + error.message, true);
       },
     });
   }

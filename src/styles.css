@@ -14,6 +14,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
 }
 
 body {
@@ -64,3 +66,64 @@ img {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Beta badge in login and register */
+
+.beta-badge {
+  background: #e4afae;
+  color: #b82d2a;
+  font-size: 0.75rem;
+  font-weight: bold;
+  border-radius: 6px;
+  padding: 2px 8px;
+  cursor: pointer;
+  position: relative;
+  outline: none;
+  user-select: none;
+  transition: background 0.2s;
+  border: 1px solid #e4afae;
+  display: inline-block;
+}
+
+.beta-badge:focus {
+  box-shadow: 0 0 0 2px #b82d2a33;
+}
+
+.beta-tooltip {
+  position: absolute;
+  left: -10%;
+  top: 120%;
+  transform: translateX(-50%);
+  background: #fff;
+  color: #333;
+  border: 1px solid #e4afae;
+  border-radius: 6px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.85rem;
+  white-space: pre-line;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  z-index: 10;
+  min-width: 220px;
+  max-width: 260px;
+  text-align: left;
+  display: block;
+  pointer-events: auto;
+}
+
+.beta-tooltip ul {
+  padding-left: 1.2em;
+  margin: 0;
+}
+
+.beta-tooltip li {
+  margin-bottom: 0.5em;
+  list-style: disc inside;
+  font-size: 0.95em;
+}
+
+.beta-tooltip a {
+  color: var(--primary-color, #b82d2a);
+  text-decoration: underline;
+  word-break: break-all;
+}
+

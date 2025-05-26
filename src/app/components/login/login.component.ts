@@ -19,6 +19,8 @@ export class LoginComponent {
     password: "",
   }
 
+  showBetaInfo = false;
+
   errorMessage: string = ""
   showPassword: boolean = false;
   showModal: boolean = false;
@@ -70,7 +72,7 @@ export class LoginComponent {
         this.router.navigate(["/dashboard"])
       },
       error: (err) => {
-        this.errorMessage = err.error
+        this.errorMessage = err.error.message || "Error en el inicio de sesión"
       },
     })
   }

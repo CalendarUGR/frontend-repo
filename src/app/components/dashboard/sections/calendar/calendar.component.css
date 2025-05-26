@@ -1,9 +1,7 @@
-:root {
-  --primary-color: rgb(184, 45, 42);
-  --secondary-color: rgb(228, 175, 174);
-  --white: #ffffff;
-  --text-color: #333;
-  --hover-color: rgba(184, 45, 42, 0.1);
+:host {
+  display: block;
+  background-color: var(--background-color);
+  line-height: 1.6;
 }
 
 .fc .fc-button {

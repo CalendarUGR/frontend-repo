@@ -1,14 +1,6 @@
 :host {
   display: block;
-  --primary-color: rgb(184, 45, 42);
-  --secondary-color: rgb(228, 175, 174);
-  --white: #ffffff;
-  --text-color: #333333;
-  --background-color: #f5f5f5;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: var(--text-color);
   background-color: var(--background-color);
-  line-height: 1.6;
 }
 
 .subscription-container {

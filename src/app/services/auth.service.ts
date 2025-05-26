@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core"
 import { type Observable, of, throwError } from "rxjs"
-import { delay, tap } from "rxjs/operators"
+import { catchError, delay, tap } from "rxjs/operators"
 import { ApiService } from './api.service';
 import { LoginRequest, LoginResponse, RegisterRequest } from '../models/auth.model';
 import { User } from "../models/user.model"
@@ -37,18 +37,21 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-
-    return this.apiService.post<LoginResponse>("auth/login", credentials).pipe(
-      tap((response) => {
-        localStorage.clear();
-        localStorage.setItem(this.accessTokenKey, response.access_token);
-        localStorage.setItem(this.refreshTokenKey, response.refresh_token);
-        this.setIsStudent(response.access_token);
-        // console.log("setIsStudent", this.isStudent);
-        // console.log("Role", this.role);
-      }),
-    );
-  }
+  return this.apiService.post<LoginResponse>("auth/login", credentials).pipe(
+    tap((response) => {
+      // Solo guardar en localStorage si la respuesta es correcta
+      localStorage.clear();
+      localStorage.setItem(this.accessTokenKey, response.access_token);
+      localStorage.setItem(this.refreshTokenKey, response.refresh_token);
+      this.setIsStudent(response.access_token);
+    }),
+    catchError((error) => {
+      // No tocar localStorage si hay error
+      console.error("Login error:", error);
+      return throwError(() => error);
+    })
+  );
+}
 
   register(registerData: RegisterRequest): Observable<User> {
 
