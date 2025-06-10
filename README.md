@@ -62,20 +62,7 @@ Asegúrate de tener instalado lo siguiente:
     ```bash
     npm install
     ```
-
-### **Configuración**
-
-Antes de ejecutar la aplicación, necesitas configurar la URL del API Gateway del backend.
-
-1.  Abre el archivo `src/environments/environment.ts`.
-2.  Modifica la propiedad `apiUrl` para que apunte a la dirección donde se está ejecutando el backend:
-    ```typescript
-    export const environment = {
-      production: false,
-      apiUrl: 'http://localhost:8090/calendarugr/v1' // O la URL de tu backend
-    };
-    ```
-
+    
 ### **Ejecutar la Aplicación**
 
 1.  **Servidor de desarrollo:**
