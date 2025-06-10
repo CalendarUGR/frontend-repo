@@ -14,7 +14,7 @@ La aplicación se comunica con el backend de TempusUGR a través de una API REST
 
 | Página de Sincronización | Página de Suscripciones |
 | :---: | :---: |
-| ![Image](https://github.com/user-attachments/assets/bea4afa6-e0dc-4540-9782-577407cb00fb) | !![Image](https://github.com/user-attachments/assets/9e1c9a4b-930c-484e-969f-ab5d422d369b) |
+| ![Image](https://github.com/user-attachments/assets/bea4afa6-e0dc-4540-9782-577407cb00fb) | ![Image](https://github.com/user-attachments/assets/9e1c9a4b-930c-484e-969f-ab5d422d369b) |
 
 ---
 
