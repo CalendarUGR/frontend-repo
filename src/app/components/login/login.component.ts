@@ -4,6 +4,7 @@ import { FormsModule } from "@angular/forms"
 import { Router, RouterLink } from "@angular/router"
 import { AuthService } from "../../services/auth.service"
 import { LoginRequest } from "../../models/auth.model"
+import { ProfileService } from "../../services/profile.service"
 
 @Component({
   selector: "app-login",
@@ -24,15 +25,24 @@ export class LoginComponent {
   errorMessage: string = ""
   showPassword: boolean = false;
   showModal: boolean = false;
+  activationModalTitle: string = "Registro exitoso";
+  activationModalText: string = "";
+
+  showRecoverModal: boolean = false;
+  recoverEmail: string = "";
+  recoverErrorMessage: string = "";
 
   constructor(
     private authService: AuthService,
+    private profileService: ProfileService,
     private router: Router,
   ) {
     const navigation = this.router.getCurrentNavigation();
-    const state = navigation?.extras.state as { showActivationModal?: boolean };
+    const state = navigation?.extras.state as { showActivationModal?: boolean, activationModalText?: string };
     if (state?.showActivationModal) {
       this.showModal = true;
+      this.activationModalTitle = "¡Correo enviado!";
+      this.activationModalText = state.activationModalText || "Accede a tu correo para poder finalizar el reseteo de la contraseña.";
     }
 
     // If access token is present, redirect to dashboard
@@ -72,7 +82,44 @@ export class LoginComponent {
         this.router.navigate(["/dashboard"])
       },
       error: (err) => {
+        console.error("Error :", err.error.message || err);
         this.errorMessage = err.error.message || "Error en el inicio de sesión"
+      },
+    })
+  }
+
+  // Methods for recover modal
+  openRecoverModal(): void {
+    this.showRecoverModal = true;
+  }
+
+  closeRecoverModal(): void {
+    this.showRecoverModal = false;
+  }
+
+  sendRecoveryEmail(): void {
+
+    if (!this.recoverEmail) {
+      this.recoverErrorMessage = "Por favor, ingrese su correo electrónico"
+      return
+    }
+
+    if (!this.checkUGRMail(this.recoverEmail)) {
+      this.recoverErrorMessage = "El correo electrónico debe ser de la UGR"
+      return
+    }
+
+    this.profileService.sendResetPasswordEmail(this.recoverEmail.trim()).subscribe({
+      next: () => {
+        this.closeRecoverModal();
+        this.activationModalText = "Se ha enviado un correo de recuperación a tu dirección. Por favor, revisa tu bandeja de entrada.";
+        this.activationModalTitle = "¡Correo enviado!";
+        this.showModal = true; // Show the modal after successful email sending
+        this.recoverErrorMessage = ""; // Clear any previous error messages
+      },
+      error: (err) => {
+        console.error("Error :", err.error.message || err);
+        this.recoverErrorMessage = "Error al enviar el correo de recuperación";
       },
     })
   }

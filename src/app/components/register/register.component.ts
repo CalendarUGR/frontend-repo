@@ -55,15 +55,17 @@ export class RegisterComponent {
 
     this.authService.register(this.registerData).subscribe({
       next: (response) => {
-        console.log("Registro exitoso", response);
         this.router.navigate(["/login"], {
-          state: { showActivationModal: true }, // Pasar estado al login
+          state: { showActivationModal: true,
+            activationModalTitle: "¡Registro exitoso!",
+            activationModalText: "Por favor, revisa tu correo para activar tu cuenta."
+           }, // Pasar estado al login
         });
         this.errorMessage = ""
       },
       error: (error) => {
-        console.error("Error en el registro", error)
-        this.errorMessage = "Error en el registro. " + error.error
+        console.error("Error :", error.error.message || error);
+        this.errorMessage = "Error en el registro. " + error.error?.message || "Por favor, inténtalo de nuevo más tarde."
       }
     })
   }

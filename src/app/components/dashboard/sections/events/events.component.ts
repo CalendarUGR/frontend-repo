@@ -88,10 +88,9 @@ export class EventsComponent {
       next: (subscriptions) => {
         this.subscriptions = subscriptions || []
         this.subscriptionsToEnrrollmentInfo();
-        //console.log("Suscripciones obtenidas:", this.subscriptions)
       },
       error: (err) => {
-        console.error("Error al obtener las suscripciones:", err)
+        console.error("Error :", err.error.message || err);
         this.subscriptions = []
       },
     })
@@ -126,7 +125,6 @@ export class EventsComponent {
       }
     });
 
-    //console.log("Información de matrícula:", enrollmentInfo);
     this.enrrollmentInfo = enrollmentInfo;
   }
 
@@ -136,10 +134,9 @@ export class EventsComponent {
       this.eventService.getMyGroupEvents().subscribe({
         next: (events) => {
           this.events.groupEvents = events || []
-          //console.log("Eventos obtenidos:", this.events)
         },
         error: (err) => {
-          console.error("Error al obtener los eventos:", err)
+          console.error("Error :", err.error.message || err);
           this.events.groupEvents = []
         },
       })
@@ -147,10 +144,9 @@ export class EventsComponent {
       this.eventService.getMyFacultyEvents().subscribe({
         next: (events) => {
           this.events = events
-          //console.log("Eventos obtenidos:", this.events)
         },
         error: (err) => {
-          console.error("Error al obtener los eventos:", err)
+          console.error("Error :", err.error.message || err);
           this.events = {
             groupEvents: [],
             facultyEvents: [],
@@ -315,11 +311,10 @@ export class EventsComponent {
         // Create event through service
         this.eventService.createFacultyEvent(this.newEvent).subscribe({
           next: (response) => {
-            //console.log("Evento creado:", response)
             this.getMyEvents();
           },
           error: (err) => {
-            console.error("Error al crear el evento:", err)
+            console.error("Error :", err.error.message || err);
             this.showNotification("Error al crear el evento ❌", true)
           },
         })
@@ -334,11 +329,10 @@ export class EventsComponent {
         // Create event through service
         this.eventService.createGroupEvent(this.newEvent).subscribe({
           next: (response) => {
-            //console.log("Evento creado:", response)
             this.getMyEvents();
           },
           error: (err) => {
-            console.error("Error al crear el evento:", err)
+            console.error("Error :", err.error.message || err);
             this.showNotification("Error al crear el evento ❌", true)
           },
         })
@@ -430,13 +424,12 @@ export class EventsComponent {
       if (this.typeEventToDelete == "GROUP") {
         this.eventService.deleteGroupEvent(this.eventToDelete).subscribe({
           next: (response) => {
-            //console.log("Evento eliminado:", response)
             this.showNotification("Evento eliminado correctamente ✅")
             this.getMyEvents();
 
           },
           error: (err) => {
-            console.error("Error al eliminar el evento:", err)
+            console.error("Error :", err.error.message || err);
             this.showNotification("Error al eliminar el evento ❌", true)
           },
         })
@@ -444,12 +437,11 @@ export class EventsComponent {
       }else {
         this.eventService.deleteFacultyEvent(this.eventToDelete).subscribe({
           next: (response) => {
-            //console.log("Evento eliminado:", response)
             this.showNotification("Evento eliminado correctamente ✅")
             this.getMyEvents();
           },
           error: (err) => {
-            console.error("Error al eliminar el evento:", err)
+            console.error("Error :", err.error.message || err);
             this.showNotification("Error al eliminar el evento ❌", true)
           },
         })
@@ -465,12 +457,11 @@ export class EventsComponent {
     if (this.eventToDelete !== null) {
       this.eventService.deleteFacultyEvent(this.eventToDelete).subscribe({
         next: (response) => {
-          //console.log("Evento eliminado:", response)
           this.showNotification("Evento eliminado correctamente ✅")
           this.getMyEvents();
         },
         error: (err) => {
-          console.error("Error al eliminar el evento:", err)
+          console.error("Error :", err.error.message || err);
           this.showNotification("Error al eliminar el evento ❌", true)
         },
       })

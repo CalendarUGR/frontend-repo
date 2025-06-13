@@ -57,7 +57,7 @@ export class SubscriptionsComponent {
           this.teacherClasses = teacherClasses || [];
         },
         error: (err) => {
-          console.error("Error al obtener las clases del profesor:", err);
+          console.error("Error :", err.error.message || err);
           this.teacherClasses = [];
         },
       });
@@ -82,7 +82,7 @@ export class SubscriptionsComponent {
         this.subscriptions = subscriptions || [];
       },
       error: (err) => {
-        console.error("Error al obtener las suscripciones:", err);
+        console.error("Error :", err.error.message || err);
         this.subscriptions = [];
       },
     });
@@ -94,7 +94,7 @@ export class SubscriptionsComponent {
         this.fields = fields || [];
       },
       error: (err) => {
-        console.error("Error al obtener los campos:", err);
+        console.error("Error :", err.error.message || err);
         this.fields = [];
       },
     });
@@ -228,6 +228,7 @@ export class SubscriptionsComponent {
           this.softResetForm();
         },
         error: (err) => {
+          console.error("Error :", err.error.message || err);
           this.showNotification("La suscripción ya existe o no es válida ( Puede que no tengamos su horario 😔 ).");
         },
       });
@@ -249,7 +250,7 @@ export class SubscriptionsComponent {
         this.softResetForm();
       },
       error: (err) => {
-        console.error("Error al eliminar la suscripción:", err);
+        console.error("Error :", err.error.message || err);
         this.showNotification("Error al eliminar la suscripción. ❌;")
       },
     })
@@ -299,7 +300,7 @@ export class SubscriptionsComponent {
           this.softResetForm();
         }
         , error: (err) => {
-          console.error("Error al añadir las suscripciones:", err);
+          console.error("Error :", err.error.message || err);
           this.showNotification("Error al añadir las suscripciones. ❌");
         }
       })

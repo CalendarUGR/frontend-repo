@@ -35,7 +35,7 @@ export class ActivateComponent implements OnInit {
         error: (error) => {
           this.activationStatus = 'error';
           if (error.status === 404) {
-            this.errorMessage = 'EL token no es válido o no se encontró al usuario.';
+            this.errorMessage = 'El token no es válido o no se encontró al usuario.';
           } else {
             this.errorMessage = 'Error al activar la cuenta. Por favor, inténtalo de nuevo más tarde.';
           }

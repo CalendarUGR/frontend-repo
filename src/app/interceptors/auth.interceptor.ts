@@ -11,9 +11,8 @@ export const AuthInterceptor: HttpInterceptorFn = (req, next) => {
   const accessToken = localStorage.getItem('access_token');
   const refreshToken = localStorage.getItem('refresh_token');
 
-  console.log('INTERCEPTOR');
-
-  if (req.url.includes('auth/refresh') || req.url.includes('auth/login') || req.url.includes('user/register') || req.url.includes('user/activate')) {
+  if (req.url.includes('auth/refresh') || req.url.includes('auth/login') || req.url.includes('user/register') || req.url.includes('user/activate')
+      || req.url.includes('user/reset-pass-mail') || req.url.includes('user/reset-password')) {
     return next(req);
   }
 

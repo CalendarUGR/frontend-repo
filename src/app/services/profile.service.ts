@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core"
 import { type Observable, of, tap } from "rxjs"
-import { User } from "../models/user.model"
+import { ResetPassword, User } from "../models/user.model"
 import { Role } from "../models/user.model"
 import { ApiService } from "./api.service"
 import { AuthService } from "./auth.service"
@@ -90,6 +90,31 @@ export class ProfileService {
     return this.apiService.put<User>('user/deactivate', {currentPassword},{}, access_token).pipe(
       tap((response) => {
         //console.log('Subscriptions response', response);
+      })
+    );
+  }
+
+  sendResetPasswordEmail(email: string): Observable<void> {
+    const access_token: string = localStorage.getItem('access_token') || '';
+
+    return this.apiService.post<void>('user/reset-pass-mail', { email }, {}).pipe(
+      tap((response) => {
+        console.log('Reset password email sent', response);
+      })
+    );
+  }
+
+  resetPassword (newPassword: string, token: string): Observable<User> {
+    // ResetPassword interface
+    const reset_info: ResetPassword = {
+      newPassword: newPassword,
+      currentPassword: newPassword, // Adapting to a DTO in the backend. Actually is confirmPassword.
+      token: token
+    };
+
+    return this.apiService.put<User>('user/reset-password', reset_info, {}).pipe(
+      tap((response) => {
+        console.log('Password reset successfully', response);
       })
     );
   }

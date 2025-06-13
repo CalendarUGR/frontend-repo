@@ -21,7 +21,7 @@ export class SyncComponent {
         this.syncUrl = response;
       },
       error: (error) => {
-        console.error('Error fetching sync URL:', error);
+        console.error("Error :", error.error.message || error);
         this.showToast = true;
         this.toastMessage = "Error al obtener la URL de sincronización";
         setTimeout(() => {

@@ -30,28 +30,28 @@ export class AuthService {
       this.role = this.getRoleFromToken(accessToken);
       if (this.role == "ROLE_STUDENT") {
         this.isStudent = true;
-      }else {
+      } else {
         this.isStudent = false;
       }
     }
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-  return this.apiService.post<LoginResponse>("auth/login", credentials).pipe(
-    tap((response) => {
-      // Solo guardar en localStorage si la respuesta es correcta
-      localStorage.clear();
-      localStorage.setItem(this.accessTokenKey, response.access_token);
-      localStorage.setItem(this.refreshTokenKey, response.refresh_token);
-      this.setIsStudent(response.access_token);
-    }),
-    catchError((error) => {
-      // No tocar localStorage si hay error
-      console.error("Login error:", error);
-      return throwError(() => error);
-    })
-  );
-}
+    return this.apiService.post<LoginResponse>("auth/login", credentials).pipe(
+      tap((response) => {
+        // Solo guardar en localStorage si la respuesta es correcta
+        localStorage.clear();
+        localStorage.setItem(this.accessTokenKey, response.access_token);
+        localStorage.setItem(this.refreshTokenKey, response.refresh_token);
+        this.setIsStudent(response.access_token);
+      }),
+      catchError((error) => {
+        // No tocar localStorage si hay error
+        console.error("Login error:", error);
+        return throwError(() => error);
+      })
+    );
+  }
 
   register(registerData: RegisterRequest): Observable<User> {
 

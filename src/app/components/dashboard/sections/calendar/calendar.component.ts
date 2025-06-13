@@ -335,7 +335,7 @@ export class CalendarComponent {
         }
       },
       error: (error) => {
-        console.error('Error fetching calendar data:', error);
+        console.error('Error fetching calendar data:', error.error.message);
       }
     });
   }

@@ -78,6 +78,7 @@ export class ProfileComponent implements OnInit {
           this.showNotification("Nickname actualizado correctamente")
         },
         error: (error) => {
+          console.error("Error :", error.error.message || error);
           this.showNotification("Error al actualizar el nickname", true)
         },
       })
@@ -107,6 +108,7 @@ export class ProfileComponent implements OnInit {
         this.goToLogin();
       },
       error: (error) => {
+        console.error("Error :", error.error.message || error);
         this.showNotification("Error al actualizar el rol", true)
       },
     })
@@ -157,6 +159,7 @@ export class ProfileComponent implements OnInit {
         this.goToLogin();
       },
       error: (error) => {
+        console.error("Error :", error.error.message || error);
         if (error.status === 404) {
           this.passwordError = "Contraseña actual incorrecta"
         } else {
@@ -184,7 +187,8 @@ export class ProfileComponent implements OnInit {
         this.goToLogin();
       },
       error: (error) => {
-        this.showNotification("Error al desactivar la cuenta: " + error.message, true);
+        console.error("Error :", error.error.message || error);
+        this.showNotification("Error al desactivar la cuenta: " + error.error.message || "Inténtalo de nuevo más tarde", true);
       },
     });
   }
@@ -198,6 +202,7 @@ export class ProfileComponent implements OnInit {
         this.showNotification(`Notificaciones ${status} correctamente`)
       },
       error: (error) => {
+        console.error("Error :", error.error.message || error);
         this.user.notification = !this.user.notification
         this.showNotification("Error al actualizar las notificaciones", true)
       },

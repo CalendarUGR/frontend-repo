@@ -8,3 +8,9 @@ export interface User {
   role : Role;
   notification : boolean;
 }
+
+export interface ResetPassword {
+  newPassword: string;
+  currentPassword: string;
+  token: string;
+}
